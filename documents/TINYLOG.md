@@ -6,7 +6,7 @@ TinyLog is a lightweight, high-performance logging framework for Java. It provid
 ## Version Information
 - **Library Version**: 2.7.0
 - **Group ID**: org.tinylog
-- **Artifacts**: 
+- **Artifacts**:
   - tinylog-api
   - tinylog-impl
 - **Official Website**: https://tinylog.org/
@@ -79,7 +79,7 @@ public class DriveSubsystem {
         Logger.info("Initializing drive subsystem");
         Logger.debug("Motor configuration: {}", motorConfig);
     }
-    
+
     public void reportError(Exception e) {
         Logger.error(e, "Drive system error occurred");
     }
@@ -99,10 +99,10 @@ Logger.error("Error conditions that should be investigated");
 ### Parameterized Messages
 ```java
 // Efficient parameterized logging (no string concatenation unless logged)
-Logger.info("Robot position: x={}, y={}, theta={}", 
+Logger.info("Robot position: x={}, y={}, theta={}",
     pose.getX(), pose.getY(), pose.getRotation().getDegrees());
 
-Logger.debug("Motor {} velocity: {} RPM, current: {} A", 
+Logger.debug("Motor {} velocity: {} RPM, current: {} A",
     motorId, velocity, current);
 
 // Exception logging
@@ -123,7 +123,7 @@ Based on the import analysis, TinyLog is used throughout the robot code:
 - **CommandLogger**: Command execution tracking
 
 ### Subsystem Classes
-- **Chassis**: Drive system status and diagnostics  
+- **Chassis**: Drive system status and diagnostics
 - **Windmill**: Arm/elevator positioning and errors
 - **VisionSimulation**: Computer vision processing logs
 
@@ -134,7 +134,7 @@ Based on the import analysis, TinyLog is used throughout the robot code:
 public class ChassisConstants {
     public void configureMotor(TalonFX motor, String name) {
         Logger.info("Configuring motor: {}", name);
-        
+
         try {
             motor.getConfigurator().apply(config);
             Logger.debug("Motor {} configured successfully", name);
@@ -151,10 +151,10 @@ public class WatchDog {
     public void checkPerformance() {
         double loopTime = getLoopTime();
         if (loopTime > MAX_LOOP_TIME) {
-            Logger.warn("Slow loop detected: {:.2f}ms (max: {:.2f}ms)", 
+            Logger.warn("Slow loop detected: {:.2f}ms (max: {:.2f}ms)",
                 loopTime * 1000, MAX_LOOP_TIME * 1000);
         }
-        
+
         Logger.trace("Loop time: {:.3f}ms", loopTime * 1000);
     }
 }
@@ -166,7 +166,7 @@ public class CommandLogger {
     public void logCommandStart(Command command) {
         Logger.info("Starting command: {}", command.getName());
     }
-    
+
     public void logCommandEnd(Command command, boolean interrupted) {
         if (interrupted) {
             Logger.warn("Command interrupted: {}", command.getName());
@@ -203,12 +203,12 @@ Logger.debug(() -> "Complex debug info: " + createComplexDebugString());
 ```java
 public class HighFrequencySubsystem {
     private static final boolean DEBUG_ENABLED = Logger.isDebugEnabled();
-    
+
     @Override
     public void periodic() {
         // Only log in debug builds to avoid performance impact
         if (DEBUG_ENABLED) {
-            Logger.debug("Sensor readings: gyro={}, encoder={}", 
+            Logger.debug("Sensor readings: gyro={}, encoder={}",
                 gyroAngle, encoderPosition);
         }
     }
@@ -224,13 +224,13 @@ public class AutonomousCommand {
     public void initialize() {
         Logger.info("Starting autonomous: {}", getName());
     }
-    
+
     @Override
     public void execute() {
-        Logger.debug("Auto step: {}, elapsed: {:.1f}s", 
+        Logger.debug("Auto step: {}, elapsed: {:.1f}s",
             getCurrentStep(), timer.get());
     }
-    
+
     @Override
     public void end(boolean interrupted) {
         if (interrupted) {
@@ -251,12 +251,12 @@ public class DriveSubsystem {
         if (hasMotorFault()) {
             Logger.error("Drive motor fault detected: {}", getFaultDescription());
         }
-        
+
         // Log warnings for degraded performance
         if (getBatteryVoltage() < MIN_VOLTAGE) {
             Logger.warn("Low battery voltage: {:.1f}V", getBatteryVoltage());
         }
-        
+
         // Debug-level telemetry
         Logger.debug("Drive odometry: {}", getPose());
     }
@@ -271,20 +271,20 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
         Logger.info("Robot initializing - Team 2046 Bear Metal");
-        Logger.info("Build info - Date: {}, Git: {}", 
+        Logger.info("Build info - Date: {}, Git: {}",
             BuildConstants.BUILD_DATE, BuildConstants.GIT_SHA);
     }
-    
+
     @Override
     public void disabledInit() {
         Logger.info("Robot disabled");
     }
-    
+
     @Override
     public void autonomousInit() {
         Logger.info("Autonomous mode started");
     }
-    
+
     @Override
     public void teleopInit() {
         Logger.info("Teleop mode started");
@@ -316,7 +316,7 @@ writer=console
 writer.level=debug
 writer.format={date: HH:mm:ss.SSS} {level} {class-name}.{method}({line}) - {message}
 
-# Competition configuration  
+# Competition configuration
 writer=file
 writer.file=/home/lvuser/logs/robot.log
 writer.level=info
@@ -331,7 +331,7 @@ public class TelemetryLogger {
     public static void logSensorData(String sensor, double value, String unit) {
         Logger.info("SENSOR,{},{},{}", sensor, value, unit);
     }
-    
+
     public static void logMatchEvent(String event) {
         Logger.info("MATCH_EVENT,{},{}", event, Timer.getFPGATimestamp());
     }

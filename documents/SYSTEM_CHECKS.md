@@ -89,10 +89,10 @@ public class ShooterConstants {
     // Current draw when running at test speed
     public static final Current RIGHT_MIN_NOMINAL_CURRENT = Amps.of(5.0);
     public static final Current RIGHT_MAX_NOMINAL_CURRENT = Amps.of(30.0);
-    
+
     public static final Current LEFT_MIN_NOMINAL_CURRENT = Amps.of(5.0);
     public static final Current LEFT_MAX_NOMINAL_CURRENT = Amps.of(30.0);
-    
+
     public static final Current HOOD_MIN_NOMINAL_CURRENT = Amps.of(1.0);
     public static final Current HOOD_MAX_NOMINAL_CURRENT = Amps.of(10.0);
 }
@@ -114,7 +114,7 @@ Supplier<Command> testCommand = () ->
     Commands.runOnce(() -> setAngularVelocity(MAX_WHEEL_VELOCITY), this)
         .andThen(Commands.waitSeconds(5))  // Let it reach steady state
         .andThen(Commands.runOnce(this::stopShooterWheel, this))
-    
+
         // Move hood through positions
         .andThen(Commands.runOnce(() -> setHoodAngle(MAX_HOOD_ANGLE), this))
         .andThen(Commands.waitSeconds(1))
@@ -137,7 +137,7 @@ Supplier<Command> testCommand = () ->
 registerSystemCheckRoutine(
     "Shooter System Check",
     testCommand,
-    
+
     new SystemCheckMotor(
         "Right Shooter Motor",
         rightShooterMotor,
@@ -219,16 +219,16 @@ ERROR Shooter System Check - Hood Motor is out of nominal range! Nominal is 1.0A
 The chassis registers checks for all 8 swerve motors:
 
 ```java
-registerSystemCheckRoutine("Chassis System Check", 
+registerSystemCheckRoutine("Chassis System Check",
     () -> driveInSquareCommand,  // Command to move the robot
-    
+
     // Drive motors (4)
-    new SystemCheckMotor("Front Left Drive", 
+    new SystemCheckMotor("Front Left Drive",
         drivetrain.getModule(0).getDriveMotor(),
         CHASSIS_DRIVE_MIN_NOMINAL_CURRENT,
         CHASSIS_DRIVE_MAX_NOMINAL_CURRENT),
     // ... 3 more drive motors
-    
+
     // Steer motors (4)
     new SystemCheckMotor("Front Left Steer",
         drivetrain.getModule(0).getSteerMotor(),
@@ -282,4 +282,3 @@ registerSystemCheckRoutine("Chassis System Check",
 | 5 | Check console and SmartDashboard for results |
 
 System checks provide a quick, automated way to verify motor health before matches. Run them during practice and pit stops to catch problems early!
-

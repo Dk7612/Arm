@@ -26,7 +26,7 @@ The CANivore is CTRE's dedicated CAN bus controller that provides isolated, high
 // Initialize devices on CANivore bus
 // The second parameter specifies the CANivore name (default is "canivore")
 TalonFX leftMotor = new TalonFX(1, "canivore");
-TalonFX rightMotor = new TalonFX(2, "canivore"); 
+TalonFX rightMotor = new TalonFX(2, "canivore");
 CANCoder encoder = new CANCoder(10, "canivore");
 Pigeon2 gyro = new Pigeon2(15, "canivore");
 
@@ -64,7 +64,7 @@ Phoenix Pro provides advanced features that require licensing. Pro licenses are 
 
 #### Pro Features Overview
 - **Advanced Motion Control**: Enhanced Motion Magic with S-curves
-- **Synchronized Control**: Time-synchronized multi-device control  
+- **Synchronized Control**: Time-synchronized multi-device control
 - **Signal Logging**: High-frequency data logging
 - **Tuning Tools**: Professional tuning and analysis tools
 - **Advanced Diagnostics**: Detailed device health monitoring
@@ -88,7 +88,7 @@ var talonFXConfigs = new TalonFXConfiguration();
 // Enhanced Motion Magic with S-curves
 var motionMagicConfigs = talonFXConfigs.MotionMagic;
 motionMagicConfigs.MotionMagicCruiseVelocity = 80;      // rps
-motionMagicConfigs.MotionMagicAcceleration = 160;       // rps/s  
+motionMagicConfigs.MotionMagicAcceleration = 160;       // rps/s
 motionMagicConfigs.MotionMagicJerk = 1600;              // rps/s² (Pro only)
 motionMagicConfigs.MotionMagicExpo_kV = 0.12;           // Pro velocity feedforward
 motionMagicConfigs.MotionMagicExpo_kA = 0.01;           // Pro acceleration feedforward
@@ -108,7 +108,7 @@ var orchestrator = new Orchestrator();
 
 // Add devices to synchronized group
 orchestrator.addDevice(leftMotor);
-orchestrator.addDevice(rightMotor); 
+orchestrator.addDevice(rightMotor);
 orchestrator.addDevice(armMotor);
 
 // Execute synchronized control
@@ -134,9 +134,9 @@ BaseStatusSignal.setUpdateFrequencyForAll(250.0,  // 250Hz update rate
 public void logProSignals() {
     if (motor.hasProLicense()) {
         Logger.recordOutput("Motor/Position_Pro", positionSignal.getValue());
-        Logger.recordOutput("Motor/Velocity_Pro", velocitySignal.getValue());  
+        Logger.recordOutput("Motor/Velocity_Pro", velocitySignal.getValue());
         Logger.recordOutput("Motor/Current_Pro", currentSignal.getValue());
-        
+
         // Additional Pro diagnostic signals
         Logger.recordOutput("Motor/Temperature", motor.getDeviceTemp().getValue());
         Logger.recordOutput("Motor/SupplyVoltage", motor.getSupplyVoltage().getValue());
@@ -257,17 +257,17 @@ Phoenix 6 provides comprehensive simulation support:
 // Simulation integration with WPILib DCMotorSim
 public void simulationPeriodic() {
     var talonFXSim = m_motor.getSimState();
-    
+
     // Set supply voltage
     talonFXSim.setSupplyVoltage(RobotController.getBatteryVoltage());
-    
+
     // Get motor voltage for physics simulation
     var motorVoltage = talonFXSim.getMotorVoltageMeasure();
-    
+
     // Update physics model
     m_motorSim.setInputVoltage(motorVoltage.in(Volts));
     m_motorSim.update(0.020);
-    
+
     // Apply results back to simulation
     talonFXSim.setRawRotorPosition(m_motorSim.getAngularPosition().times(kGearRatio));
     talonFXSim.setRotorVelocity(m_motorSim.getAngularVelocity().times(kGearRatio));
@@ -297,7 +297,7 @@ final DifferentialDrive m_diffDrive = new DifferentialDrive(
 
 5. **Unit Testing**: Phoenix 6 provides simulation support for comprehensive unit testing.
 
-6. **CANivore Usage Strategy**: 
+6. **CANivore Usage Strategy**:
    - Use CANivore for high-performance subsystems (drivetrain, critical mechanisms)
    - Keep lower-priority devices on roboRIO CAN to balance cost and performance
    - Monitor CAN bus utilization with `CANBus.getStatus()`
@@ -311,7 +311,7 @@ final DifferentialDrive m_diffDrive = new DifferentialDrive(
        // Use advanced Pro features
        BaseStatusSignal.setUpdateFrequencyForAll(250.0, signals);
    } else {
-       // Fall back to standard features  
+       // Fall back to standard features
        BaseStatusSignal.setUpdateFrequencyForAll(50.0, signals);
    }
    ```
@@ -332,9 +332,9 @@ final DifferentialDrive m_diffDrive = new DifferentialDrive(
    - Group signals by update frequency for efficiency
    ```java
    // Critical control signals - high frequency
-   BaseStatusSignal.setUpdateFrequencyForAll(100.0, 
+   BaseStatusSignal.setUpdateFrequencyForAll(100.0,
        motor.getPosition(), motor.getVelocity());
-   
+
    // Diagnostic signals - standard frequency
    BaseStatusSignal.setUpdateFrequencyForAll(10.0,
        motor.getDeviceTemp(), motor.getSupplyVoltage());

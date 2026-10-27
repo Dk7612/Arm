@@ -17,7 +17,7 @@ SysId characterizes mechanisms using the equation:
 
 Where:
 - **kS** (Static gain): Voltage to overcome static friction
-- **kV** (Velocity gain): Voltage per unit of steady-state velocity  
+- **kV** (Velocity gain): Voltage per unit of steady-state velocity
 - **kA** (Acceleration gain): Voltage per unit of acceleration
 - **V**: Applied voltage to mechanism
 
@@ -69,7 +69,7 @@ import edu.wpi.first.units.*;
 
 public class DriveSubsystem extends SubsystemBase {
     private final SysIdRoutine sysIdRoutine;
-    
+
     public DriveSubsystem() {
         // Configure SysId routine
         sysIdRoutine = new SysIdRoutine(
@@ -85,7 +85,7 @@ public class DriveSubsystem extends SubsystemBase {
                             leftMotor.get() * RobotController.getBatteryVoltage(), Volts))
                         .linearPosition(m_distance.mut_replace(leftEncoder.getDistance(), Meters))
                         .linearVelocity(m_velocity.mut_replace(leftEncoder.getRate(), MetersPerSecond));
-                    
+
                     log.motor("drive-right")
                         .voltage(m_appliedVoltage.mut_replace(
                             rightMotor.get() * RobotController.getBatteryVoltage(), Volts))
@@ -96,12 +96,12 @@ public class DriveSubsystem extends SubsystemBase {
             )
         );
     }
-    
+
     // Expose SysId commands for autonomous
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return sysIdRoutine.quasistatic(direction);
     }
-    
+
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return sysIdRoutine.dynamic(direction);
     }
@@ -112,7 +112,7 @@ public class DriveSubsystem extends SubsystemBase {
 ```java
 public class ArmSubsystem extends SubsystemBase {
     private final SysIdRoutine sysIdRoutine;
-    
+
     public ArmSubsystem() {
         sysIdRoutine = new SysIdRoutine(
             new SysIdRoutine.Config(),
@@ -141,23 +141,23 @@ public class ArmSubsystem extends SubsystemBase {
 public class SysIdCommands {
     public static void configureSysIdCommands(RobotContainer robotContainer) {
         DriveSubsystem drive = robotContainer.getDriveSubsystem();
-        
+
         // Bind SysId tests to controller
         new JoystickButton(controller, 1).whileTrue(
             drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
                 .withName("Drive Quasistatic Forward")
         );
-        
+
         new JoystickButton(controller, 2).whileTrue(
             drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-                .withName("Drive Quasistatic Reverse")  
+                .withName("Drive Quasistatic Reverse")
         );
-        
+
         new JoystickButton(controller, 3).whileTrue(
             drive.sysIdDynamic(SysIdRoutine.Direction.kForward)
                 .withName("Drive Dynamic Forward")
         );
-        
+
         new JoystickButton(controller, 4).whileTrue(
             drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
                 .withName("Drive Dynamic Reverse")
@@ -170,7 +170,7 @@ public class SysIdCommands {
 
 ### Pre-Test Setup
 1. **Ensure Safety**: Clear area around robot, verify emergency stop functionality
-2. **Battery**: Use fully charged battery (>12.5V recommended)  
+2. **Battery**: Use fully charged battery (>12.5V recommended)
 3. **Calibration**: Zero encoders and verify sensor readings
 4. **Space**: Ensure adequate space for mechanism movement
 
@@ -186,7 +186,7 @@ public class SysIdCommands {
 - **Duration**: Typically 10-15 seconds per direction
 - **Characteristics**: Smooth acceleration, reaches steady state
 
-### Dynamic Test  
+### Dynamic Test
 - **Purpose**: Measure kA constant and validate kS/kV
 - **Method**: Apply step voltage inputs while measuring acceleration
 - **Duration**: Typically 3-5 seconds per direction
@@ -215,7 +215,7 @@ public class DriveConstants {
     public static final double kS = 0.667; // Volts - static friction
     public static final double kV = 2.44;  // Volt-seconds/meter - velocity
     public static final double kA = 0.27;  // Volt-seconds²/meter - acceleration
-    
+
     // Recommended PID gains
     public static final double kP = 3.5;   // Position gain
     public static final double kI = 0.0;   // Integral gain (usually 0)
@@ -231,22 +231,22 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class DriveSubsystem extends SubsystemBase {
     // Use SysId results for feedforward
-    private final SimpleMotorFeedforward leftFeedforward = 
+    private final SimpleMotorFeedforward leftFeedforward =
         new SimpleMotorFeedforward(
-            DriveConstants.kS, 
-            DriveConstants.kV, 
+            DriveConstants.kS,
+            DriveConstants.kV,
             DriveConstants.kA
         );
-    
+
     public void setVelocity(double leftVelocity, double rightVelocity) {
         // Calculate feedforward voltages
         double leftFF = leftFeedforward.calculate(leftVelocity);
         double rightFF = rightFeedforward.calculate(rightVelocity);
-        
+
         // Combine with PID feedback
         double leftPID = leftPIDController.calculate(getLeftVelocity(), leftVelocity);
         double rightPID = rightPIDController.calculate(getRightVelocity(), rightVelocity);
-        
+
         // Apply total voltage
         leftMotor.setVoltage(leftFF + leftPID);
         rightMotor.setVoltage(rightFF + rightPID);
@@ -261,13 +261,13 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 public class PhoenixSysIdIntegration {
     public static void applySysIdResults(TalonFX motor) {
         Slot0Configs slot0Configs = new Slot0Configs();
-        
+
         // Apply SysId feedforward results
         slot0Configs.kS = DriveConstants.kS;  // Static gain
-        slot0Configs.kV = DriveConstants.kV;  // Velocity gain  
+        slot0Configs.kV = DriveConstants.kV;  // Velocity gain
         slot0Configs.kA = DriveConstants.kA;  // Acceleration gain
         slot0Configs.kP = DriveConstants.kP;  // Proportional gain
-        
+
         motor.getConfigurator().apply(slot0Configs);
     }
 }
@@ -318,7 +318,7 @@ public class PhoenixSysIdIntegration {
 // Log SysId data for AdvantageScope analysis
 public void logSysIdData() {
     Logger.recordOutput("SysId/Applied Voltage", appliedVoltage);
-    Logger.recordOutput("SysId/Position", currentPosition);  
+    Logger.recordOutput("SysId/Position", currentPosition);
     Logger.recordOutput("SysId/Velocity", currentVelocity);
     Logger.recordOutput("SysId/Timestamp", Timer.getFPGATimestamp());
 }
@@ -329,12 +329,12 @@ public void logSysIdData() {
 // Use SysId constants in simulation
 public class DriveSimulation {
     private final LinearSystem<N2, N2, N2> plant;
-    
+
     public DriveSimulation() {
         // Create plant model using SysId constants
         plant = LinearSystemId.identifyDrivetrainSystem(
             DriveConstants.kV,  // kV linear
-            DriveConstants.kA,  // kA linear  
+            DriveConstants.kA,  // kA linear
             DriveConstants.kV * trackWidth, // kV angular
             DriveConstants.kA * trackWidth  // kA angular
         );

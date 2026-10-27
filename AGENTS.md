@@ -61,7 +61,7 @@ This is a FRC (FIRST Robotics Competition) 2025 robot codebase for team "Bear Me
 ## Development Workflow
 
 ### Simulation Setup
-1. Run `./gradlew simulateJava` 
+1. Run `./gradlew simulateJava`
 2. Change Robot State to "Teleoperated" in simulation window
 3. Drag Xbox Controller or Keyboard 0 to Joystick[0] slot
 4. For AdvantageScope: Connect to simulator (Ctrl+Shift+K), use team address "10.20.46.2"
@@ -102,7 +102,7 @@ Comprehensive API documentation is available in the `documents/` folder:
 ## Important Notes
 
 - **Team Number**: Configured via .wpilib/wpilib_preferences.json
-- **Simulation Data**: CTRE sim data stored in `ctre_sim/` directory  
+- **Simulation Data**: CTRE sim data stored in `ctre_sim/` directory
 - **PathPlanner Integration**: Auto paths stored in `src/main/deploy/pathplanner/`
 - **Starting Position**: Robot simulation starts at (3,3) coordinates
 - **Thread Priority**: Robot uses high-priority threading for better loop timing

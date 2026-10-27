@@ -3,7 +3,7 @@
 ## Overview
 WPILib (WPI Robotics Library) is the core software framework for FRC (FIRST Robotics Competition) robots. It provides the fundamental building blocks for robot control, including hardware interfaces, control algorithms, mathematical utilities, and simulation capabilities.
 
-## Version Information  
+## Version Information
 - **Library Version**: 2025.3.2 (FRC 2025 season)
 - **Group ID**: edu.wpi.first
 - **Core Modules**:
@@ -24,27 +24,27 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Initialize robot hardware and subsystems
     }
-    
+
     @Override
     public void robotPeriodic() {
         // Runs every 20ms regardless of mode
     }
-    
+
     @Override
     public void autonomousInit() {
         // Initialize autonomous mode
     }
-    
+
     @Override
     public void autonomousPeriodic() {
         // Runs every 20ms during autonomous
     }
-    
+
     @Override
     public void teleopInit() {
         // Initialize teleop mode
     }
-    
+
     @Override
     public void teleopPeriodic() {
         // Runs every 20ms during teleop
@@ -62,7 +62,7 @@ public class DriveSubsystem extends SubsystemBase {
     public void periodic() {
         // Called every 20ms
     }
-    
+
     public Command driveCommand(DoubleSupplier forward, DoubleSupplier rotation) {
         return run(() -> {
             drive(forward.getAsDouble(), rotation.getAsDouble());
@@ -186,7 +186,7 @@ DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(chassisSpeed
 // Swerve drive kinematics
 Translation2d[] modulePositions = {
     new Translation2d(0.3, 0.3),   // Front left
-    new Translation2d(0.3, -0.3),  // Front right  
+    new Translation2d(0.3, -0.3),  // Front right
     new Translation2d(-0.3, 0.3),  // Back left
     new Translation2d(-0.3, -0.3)  // Back right
 };
@@ -194,8 +194,8 @@ SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(modulePositio
 
 // Odometry
 DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(
-    gyro.getRotation2d(), 
-    leftEncoder.getDistance(), 
+    gyro.getRotation2d(),
+    leftEncoder.getDistance(),
     rightEncoder.getDistance(),
     new Pose2d() // Starting pose
 );
@@ -249,7 +249,7 @@ DifferentialDrivetrainSim drivetrainSim = new DifferentialDrivetrainSim(
 // Elevator simulation
 ElevatorSim elevatorSim = new ElevatorSim(
     LinearSystemId.createElevatorSystem(
-        DCMotor.getNEO(2), 
+        DCMotor.getNEO(2),
         70, // Carriage mass
         0.05, // Drum radius
         4.0 // Gearing
@@ -269,19 +269,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveSubsystem extends SubsystemBase {
     private final Field2d field = new Field2d();
-    
+
     public DriveSubsystem() {
         SmartDashboard.putData("Field", field);
     }
-    
+
     @Override
     public void periodic() {
         // Update robot pose on field
         field.setRobotPose(getPose());
-        
+
         // Show trajectory
         field.getObject("trajectory").setTrajectory(currentTrajectory);
-        
+
         // Show vision targets
         field.getObject("vision").setPoses(visionTargets);
     }
@@ -344,7 +344,7 @@ public class Robot extends LoggedRobot {
 
 ### Mathematical Operations
 - **Pose2d/Pose3d** for robot localization
-- **Transform2d/Transform3d** for coordinate transformations  
+- **Transform2d/Transform3d** for coordinate transformations
 - **Rotation2d** for angle representations
 - **ChassisSpeeds** for velocity commands
 - **PID controllers** for closed-loop control
@@ -372,12 +372,12 @@ public void setSpeeds(double left, double right) {
     // Validate inputs
     left = MathUtil.clamp(left, -1.0, 1.0);
     right = MathUtil.clamp(right, -1.0, 1.0);
-    
+
     // Apply safety limits
     if (DriverStation.isDisabled()) {
         left = right = 0.0;
     }
-    
+
     leftMotor.set(left);
     rightMotor.set(right);
 }
@@ -389,12 +389,12 @@ public void setSpeeds(double left, double right) {
 public void periodic() {
     // Update odometry every loop
     odometry.update(gyro.getRotation2d(), getLeftDistance(), getRightDistance());
-    
+
     // Expensive operations less frequently
     if (loopCounter % 5 == 0) { // Every 100ms
         updateVisionPose();
     }
-    
+
     loopCounter++;
 }
 ```
@@ -407,7 +407,7 @@ public void configureForCompetition() {
         // Minimize telemetry
         table.getEntry("Debug Data").unpublish();
     }
-    
+
     // Set appropriate timeouts
     motor.configAllSettings(config, 50); // 50ms timeout
 }
@@ -422,7 +422,7 @@ MotorController phoenixMotor = new TalonFX(1);
 DifferentialDrive drive = new DifferentialDrive(phoenixMotor, phoenixMotor);
 ```
 
-### Vision Integration  
+### Vision Integration
 ```java
 // WPILib geometry classes work seamlessly with PhotonVision
 Pose2d visionPose = visionResult.getBestTarget().getBestCameraToTarget().toPose2d();

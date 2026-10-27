@@ -129,11 +129,11 @@ public class ChassisConstants {
     // Hardware IDs
     public static final int LEFT_FRONT_DRIVE_ID = 1;
     public static final int LEFT_FRONT_STEER_ID = 2;
-    
+
     // Physical constants with units
     public static final Distance WHEELBASE = Meters.of(0.62);
     public static final Velocity MAX_VELOCITY = MetersPerSecond.of(4.5);
-    
+
     // PID gains grouped in nested class
     public static final class DriveGains {
         public static final double KP = 0.1;
@@ -155,15 +155,15 @@ public class CollectorSubsystem extends AbstractSubsystem {
     // Hardware
     private final TalonFX leftRollerMotor;
     private final TalonFX rightRollerMotor;
-    
+
     // Status signals
     private final StatusSignal<Angle> leftRollerPositionSignal;
     private final StatusSignal<AngularVelocity> leftRollerVelocitySignal;
-    
+
     // Control requests
     private final VoltageOut voltageRequest = new VoltageOut(0);
     private final PositionVoltage positionRequest = new PositionVoltage(0);
-    
+
     // State
     private RollerState currentRollerState = RollerState.IDLE;
 }
@@ -187,12 +187,12 @@ public void drive(double speed) {
     if (speed > MAX_SPEED) {
         speed = MAX_SPEED;
     }
-    
+
     motor.set(speed);
 }
 
 // Bad
-public void drive(double speed) 
+public void drive(double speed)
 {
     if (speed > MAX_SPEED)
         speed = MAX_SPEED;
@@ -224,20 +224,20 @@ Every subsystem should have exactly two constructors:
 public class ExampleSubsystem extends AbstractSubsystem {
     private final TalonFX motor;
     private final DigitalInput limitSwitch;
-    
+
     // Default constructor - only place that creates hardware (except tests)
     public ExampleSubsystem() {
         motor = new TalonFX(MOTOR_ID, CANIVORE_NAME);
         limitSwitch = new DigitalInput(LIMIT_SWITCH_PORT);
         configureHardware();
     }
-    
+
     // Package-private constructor for unit testing
     ExampleSubsystem(ExampleSubsystem other) {
         this.motor = other.motor;
         this.limitSwitch = other.limitSwitch;
     }
-    
+
     private void configureHardware() {
         // Hardware configuration logic
     }
@@ -313,11 +313,11 @@ public void configureMotor() {
 ```java
 public void setTrajectory(Trajectory trajectory) {
     Objects.requireNonNull(trajectory, "Trajectory cannot be null");
-    
+
     if (trajectory.getTotalTimeSeconds() <= 0) {
         throw new IllegalArgumentException("Trajectory duration must be positive");
     }
-    
+
     this.currentTrajectory = trajectory;
 }
 ```
@@ -331,20 +331,20 @@ public void setTrajectory(Trajectory trajectory) {
 /**
  * Controls a swerve drive module with independent steering and drive motors.
  * Provides closed-loop control for both position and velocity.
- * 
+ *
  * <p>This class handles the low-level motor control and sensor feedback
  * for a single swerve module, including angle optimization and
  * continuous rotation handling.
  */
 public class SwerveModule {
-    
+
     /**
      * Sets the desired state for this swerve module.
-     * 
+     *
      * <p>The angle will be optimized to minimize rotation distance,
      * potentially reversing the drive direction to avoid rotating
      * more than 90 degrees.
-     * 
+     *
      * @param desiredState the target state for this module
      * @throws IllegalArgumentException if desiredState is null
      */
@@ -382,16 +382,16 @@ motor.set(desiredSpeed);
 ```java
 @Tag("unit")
 public class SwerveModuleTest extends BaseTest {
-    
+
     @Test
     public void testAngleOptimization() {
         // Given
         SwerveModule module = new SwerveModule();
         SwerveModuleState initialState = new SwerveModuleState(1.0, Rotation2d.fromDegrees(0));
-        
+
         // When
         module.setDesiredState(new SwerveModuleState(1.0, Rotation2d.fromDegrees(170)));
-        
+
         // Then
         SwerveModuleState actualState = module.getState();
         assertEquals(-1.0, actualState.speedMetersPerSecond, 0.01);
@@ -424,14 +424,14 @@ public class ChassisSubsystem extends AbstractSubsystem {
     // Reuse control requests
     private final VoltageOut voltageRequest = new VoltageOut(0);
     private final PositionVoltage positionRequest = new PositionVoltage(0);
-    
+
     // Reuse mathematical objects
     private final Translation2d tempTranslation = new Translation2d();
-    
+
     public void drive(double voltage) {
         // Good - reuse existing object
         motor.setControl(voltageRequest.withOutput(voltage));
-        
+
         // Bad - creates new object every call
         motor.setControl(new VoltageOut(voltage));
     }
@@ -449,12 +449,12 @@ public void configureSignals() {
     BaseStatusSignal.setUpdateFrequencyForAll(100.0,
         leftDrivePosition, leftDriveVelocity,
         rightDrivePosition, rightDriveVelocity);
-    
+
     // Diagnostic signals - lower frequency
     BaseStatusSignal.setUpdateFrequencyForAll(10.0,
         leftDriveVoltage, leftDriveCurrent,
         rightDriveVoltage, rightDriveCurrent);
-    
+
     // Optimize overall bus usage
     ParentDevice.optimizeBusUtilizationForAll(leftDrive, rightDrive);
 }

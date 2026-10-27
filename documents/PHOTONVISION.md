@@ -6,7 +6,7 @@ PhotonVision is a free, fast, and easy-to-use computer vision solution for FRC r
 ## Version Information
 - **Library Version**: v2025.3.1
 - **Java Group ID**: org.photonvision
-- **Artifacts**: 
+- **Artifacts**:
   - photonlib-java
   - photontargeting-java
 - **Maven URL**: https://maven.photonvision.org/repository/internal
@@ -28,13 +28,13 @@ var result = camera.getLatestResult();
 
 if (result.hasTargets()) {
     PhotonTrackedTarget target = result.getBestTarget();
-    
+
     // Get target information
     double yaw = target.getYaw();
     double pitch = target.getPitch();
     double area = target.getArea();
     double skew = target.getSkew();
-    
+
     // Get pose ambiguity for AprilTags
     double poseAmbiguity = target.getPoseAmbiguity();
 }
@@ -102,29 +102,29 @@ PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR // Use multi-tag PnP (recommended)
 public class VisionSubsystem extends SubsystemBase {
     private final PhotonCamera aprilTagCamera;
     private final PhotonCamera gameElementCamera;
-    
+
     public VisionSubsystem() {
         aprilTagCamera = new PhotonCamera("apriltag-camera");
         gameElementCamera = new PhotonCamera("game-element-camera");
     }
-    
+
     @Override
     public void periodic() {
         // Process AprilTag results
         processAprilTagResults();
-        
+
         // Process game element results
         processGameElementResults();
     }
-    
+
     private void processAprilTagResults() {
         var result = aprilTagCamera.getLatestResult();
-        
+
         if (result.hasTargets()) {
             for (PhotonTrackedTarget target : result.getTargets()) {
                 int fiducialId = target.getFiducialId();
                 Transform3d robotToTarget = target.getBestCameraToTarget();
-                
+
                 // Process specific AprilTag
                 processAprilTag(fiducialId, robotToTarget);
             }
@@ -151,7 +151,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 public class DriveSubsystem extends SubsystemBase {
     private final SwerveDrivePoseEstimator poseEstimator;
     private final PhotonPoseEstimator photonPoseEstimator;
-    
+
     @Override
     public void periodic() {
         // Update odometry with encoder data
@@ -159,12 +159,12 @@ public class DriveSubsystem extends SubsystemBase {
             getRotation(),
             getModulePositions()
         );
-        
+
         // Add vision measurements
         var visionResult = photonPoseEstimator.update();
         if (visionResult.isPresent()) {
             EstimatedRobotPose visionPose = visionResult.get();
-            
+
             // Add vision measurement with appropriate standard deviations
             poseEstimator.addVisionMeasurement(
                 visionPose.estimatedPose.toPose2d(),
@@ -187,14 +187,14 @@ import org.photonvision.simulation.VisionSystemSim;
 public class VisionSimulation {
     private final VisionSystemSim visionSim;
     private final PhotonCameraSim cameraSim;
-    
+
     public VisionSimulation() {
         // Create vision system simulation
         visionSim = new VisionSystemSim("main");
-        
+
         // Add field AprilTags
         visionSim.addAprilTags(fieldLayout);
-        
+
         // Configure camera properties
         var cameraProperties = new SimCameraProperties();
         cameraProperties.setCalibration(1280, 720, Rotation2d.fromDegrees(70));
@@ -202,12 +202,12 @@ public class VisionSimulation {
         cameraProperties.setFPS(30);
         cameraProperties.setAvgLatencyMs(35);
         cameraProperties.setLatencyStdDevMs(5);
-        
+
         // Create camera simulation
         cameraSim = new PhotonCameraSim(camera, cameraProperties);
         visionSim.addCamera(cameraSim, robotToCamera);
     }
-    
+
     public void updateSimulation(Pose2d robotPose) {
         visionSim.update(robotPose);
     }
@@ -223,7 +223,7 @@ PhotonVision automatically publishes data to NetworkTables:
 // Data is published to /photonvision/{camera-name}/
 // - hasTarget: boolean
 // - targetYaw: double
-// - targetPitch: double  
+// - targetPitch: double
 // - targetArea: double
 // - targetPose: double array (if AprilTag)
 // - pipelineIndex: int
@@ -263,7 +263,7 @@ Transform3d robotToTarget = robotToCamera.plus(cameraToTarget);
 public class VisionManager {
     private final PhotonCamera camera;
     private final Timer pipelineTimer = new Timer();
-    
+
     public void managePipelines() {
         // Switch pipelines based on game state
         if (DriverStation.isAutonomous()) {
@@ -272,7 +272,7 @@ public class VisionManager {
             camera.setPipelineIndex(GAME_ELEMENT_PIPELINE);
         }
     }
-    
+
     // Reduce processing frequency when not needed
     public void setProcessingEnabled(boolean enabled) {
         if (enabled) {
@@ -314,7 +314,7 @@ public double getDistanceToTarget() {
     var result = camera.getLatestResult();
     if (result.hasTargets()) {
         PhotonTrackedTarget target = result.getBestTarget();
-        
+
         return PhotonUtils.calculateDistanceToTargetMeters(
             CAMERA_HEIGHT_METERS,
             TARGET_HEIGHT_METERS,

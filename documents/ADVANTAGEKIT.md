@@ -42,9 +42,9 @@ public interface DriveIO {
         public double leftCurrentAmps = 0.0;
         public double rightCurrentAmps = 0.0;
     }
-    
+
     public default void updateInputs(DriveIOInputs inputs) {}
-    
+
     public default void setVoltage(double leftVolts, double rightVolts) {}
 }
 ```
@@ -54,12 +54,12 @@ public interface DriveIO {
 public class DriveIOTalonFX implements DriveIO {
     private final TalonFX leftMotor;
     private final TalonFX rightMotor;
-    
+
     public DriveIOTalonFX() {
         leftMotor = new TalonFX(1);
         rightMotor = new TalonFX(2);
     }
-    
+
     @Override
     public void updateInputs(DriveIOInputs inputs) {
         inputs.leftVelocityRPM = leftMotor.getVelocity().getValueAsDouble() * 60.0;
@@ -71,7 +71,7 @@ public class DriveIOTalonFX implements DriveIO {
         inputs.leftCurrentAmps = leftMotor.getStatorCurrent().getValueAsDouble();
         inputs.rightCurrentAmps = rightMotor.getStatorCurrent().getValueAsDouble();
     }
-    
+
     @Override
     public void setVoltage(double leftVolts, double rightVolts) {
         leftMotor.setControl(new VoltageOut(leftVolts));
@@ -87,19 +87,19 @@ public class DriveIOSim implements DriveIO {
     private final DCMotorSim rightSim;
     private double leftAppliedVolts = 0.0;
     private double rightAppliedVolts = 0.0;
-    
+
     public DriveIOSim() {
         leftSim = new DCMotorSim(LinearSystemId.identifyDrivetrainSystem(
             kvLinear, kaLinear, kvAngular, kaAngular), DCMotor.getCIM(2));
         rightSim = new DCMotorSim(LinearSystemId.identifyDrivetrainSystem(
             kvLinear, kaLinear, kvAngular, kaAngular), DCMotor.getCIM(2));
     }
-    
+
     @Override
     public void updateInputs(DriveIOInputs inputs) {
         leftSim.update(0.02);
         rightSim.update(0.02);
-        
+
         inputs.leftVelocityRPM = leftSim.getAngularVelocityRPM();
         inputs.rightVelocityRPM = rightSim.getAngularVelocityRPM();
         inputs.leftPositionRot = leftSim.getAngularPositionRotations();
@@ -109,7 +109,7 @@ public class DriveIOSim implements DriveIO {
         inputs.leftCurrentAmps = leftSim.getCurrentDrawAmps();
         inputs.rightCurrentAmps = rightSim.getCurrentDrawAmps();
     }
-    
+
     @Override
     public void setVoltage(double leftVolts, double rightVolts) {
         leftAppliedVolts = leftVolts;
@@ -125,17 +125,17 @@ public class DriveIOSim implements DriveIO {
 public class DriveSubsystem extends SubsystemBase {
     private final DriveIO io;
     private final DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
-    
+
     public DriveSubsystem(DriveIO io) {
         this.io = io;
     }
-    
+
     @Override
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Drive", inputs);
     }
-    
+
     public void setVoltage(double leftVolts, double rightVolts) {
         io.setVoltage(leftVolts, rightVolts);
     }
@@ -187,7 +187,7 @@ public class Main {
         Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
         Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
         Logger.recordMetadata("GitDirty", BuildConstants.DIRTY);
-        
+
         // Set recording directory
         if (Robot.isReal()) {
             Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
@@ -196,9 +196,9 @@ public class Main {
             Logger.setReplaySource(new WPILOGReader("path/to/log.wpilog"));
             Logger.addDataReceiver(new WPILOGWriter(""));
         }
-        
+
         Logger.start();
-        
+
         RobotBase.startRobot(Robot::new);
     }
 }
@@ -241,7 +241,7 @@ public void configureStatusFrames() {
     // Reduce non-critical frame rates
     motor.getPosition().setUpdateFrequency(10); // 10 Hz instead of 50 Hz
     motor.getStatorCurrent().setUpdateFrequency(20); // 20 Hz
-    
+
     // Keep important signals at high frequency
     motor.getVelocity().setUpdateFrequency(100); // 100 Hz
 }

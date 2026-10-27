@@ -205,9 +205,9 @@ public boolean shouldFlipPath() {
 ### Velocity Constraints
 ```java
 // Define constraints for different path segments
-PathConstraints fastConstraints = new PathConstraints(4.0, 3.0, 
+PathConstraints fastConstraints = new PathConstraints(4.0, 3.0,
     Units.degreesToRadians(540), Units.degreesToRadians(720));
-    
+
 PathConstraints slowConstraints = new PathConstraints(2.0, 2.0,
     Units.degreesToRadians(360), Units.degreesToRadians(540));
 ```

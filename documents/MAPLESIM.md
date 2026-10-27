@@ -4,7 +4,7 @@
 MapleSim is a comprehensive physics simulation framework specifically designed for FRC robotics. Developed by Shenzhen Robotics Alliance, it provides high-fidelity physics simulation capabilities with seamless integration into WPILib and FRC development workflows.
 
 ## Version Information
-- **Library Version**: 0.3.11  
+- **Library Version**: 0.3.11
 - **Group ID**: org.ironmaple
 - **Artifact**: maplesim-java
 - **Maven URL**: https://shenzhen-robotics-alliance.github.io/maple-sim/vendordep/repos/releases
@@ -22,15 +22,15 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 public class RobotSimulation {
     private final SimulationWorld world;
     private final SwerveDriveSimulation driveSimulation;
-    
+
     public RobotSimulation() {
         // Create simulation world with FRC field
         world = new SimulationWorld();
-        
+
         // Initialize drive simulation
         driveSimulation = new SwerveDriveSimulation(world, chassisConfig);
     }
-    
+
     public void updateSimulation() {
         world.simulationSubTick(0.020); // 20ms physics step
     }
@@ -65,19 +65,19 @@ import org.ironmaple.simulation.gamepieces.GamePieceSimulation;
 
 public class FieldSimulation {
     private final GamePieceSimulation gamePieceSimulation;
-    
+
     public FieldSimulation() {
         // Initialize game piece physics
         gamePieceSimulation = new GamePieceSimulation(world);
-        
+
         // Add game pieces to field
         addGamePiecesToField();
     }
-    
+
     private void addGamePiecesToField() {
         // Add notes/game pieces at field positions
         gamePieceSimulation.addGamePiece(
-            GamePieceType.NOTE, 
+            GamePieceType.NOTE,
             new Pose2d(2.0, 5.5, new Rotation2d())
         );
     }
@@ -93,29 +93,29 @@ MapleSim integrates with existing subsystems through simulation interfaces:
 public class ChassisSimulation {
     private final SwerveDriveSimulation driveSimulation;
     private final SwerveModule[] moduleSimulations;
-    
+
     public ChassisSimulation(SimulationWorld world) {
         // Create drive simulation
         driveSimulation = new SwerveDriveSimulation(world, chassisConfig);
-        
+
         // Initialize module simulations
         moduleSimulations = new SwerveModule[4];
         for (int i = 0; i < 4; i++) {
             moduleSimulations[i] = new SwerveModuleSimulation(moduleConfigs[i]);
         }
     }
-    
+
     public void updateInputs(ChassisIOInputsAutoLogged inputs) {
         // Get simulated sensor readings
         inputs.gyroYawPosition = driveSimulation.getGyroReading();
         inputs.odometryPose = driveSimulation.getSimulatedDriveTrainPose();
-        
+
         // Update module inputs
         for (int i = 0; i < 4; i++) {
             inputs.moduleStates[i] = moduleSimulations[i].getCurrentState();
         }
     }
-    
+
     public void setDesiredStates(SwerveModuleState[] states) {
         for (int i = 0; i < 4; i++) {
             moduleSimulations[i].setDesiredState(states[i]);
@@ -130,15 +130,15 @@ import org.ironmaple.simulation.vision.VisionSystemSimulation;
 
 public class VisionSimulation {
     private final VisionSystemSimulation visionSim;
-    
+
     public VisionSimulation(SimulationWorld world) {
         // Create vision system simulation
         visionSim = new VisionSystemSimulation(world);
-        
+
         // Configure cameras
         addCamerasToSimulation();
     }
-    
+
     private void addCamerasToSimulation() {
         // Add AprilTag camera
         CameraSimulationConfig aprilTagCameraConfig = new CameraSimulationConfig()
@@ -147,10 +147,10 @@ public class VisionSimulation {
             .withCameraResolution(1280, 720)
             .withFOV(Math.toRadians(70))
             .withLatency(0.035); // 35ms latency
-            
+
         visionSim.addCamera(aprilTagCameraConfig);
     }
-    
+
     public void updateSimulation(Pose2d robotPose) {
         visionSim.updateVisionEstimation(robotPose);
     }
@@ -178,15 +178,15 @@ SwerveModuleSimulationConfig moduleConfig = new SwerveModuleSimulationConfig()
     // Physical properties
     .withWheelRadius(0.0508)        // 2" wheels in meters
     .withWheelCOF(1.2)              // Coefficient of friction
-    
+
     // Gearing
     .withDriveGearRatio(6.75)       // Drive reduction (MK4i L2)
     .withSteerGearRatio(150.0/7.0)  // Steering reduction
-    
+
     // Motors
     .withDriveMotor(DCMotor.getKrakenX60Foc(1))  // Kraken X60 drive
     .withSteerMotor(DCMotor.getNeo550(1))        // NEO 550 steer
-    
+
     // Current limits
     .withDriveCurrentLimit(80.0)    // 80A drive current limit
     .withSteerCurrentLimit(20.0);   // 20A steer current limit
@@ -196,25 +196,25 @@ SwerveModuleSimulationConfig moduleConfig = new SwerveModuleSimulationConfig()
 ```java
 public class Arena2025Reefscape {
     private final SimulationWorld world;
-    
+
     public Arena2025Reefscape() {
         world = new SimulationWorld();
-        
+
         // Add field boundaries
         addFieldBoundaries();
-        
+
         // Add field elements
         addFieldElements();
-        
+
         // Add game pieces
         addGamePieces();
     }
-    
+
     private void addFieldBoundaries() {
         // Create field perimeter walls
         world.addFieldBoundary(0, 0, 16.54, 8.21); // FRC field dimensions
     }
-    
+
     private void addFieldElements() {
         // Add scoring areas, barriers, etc.
         world.addStaticObstacle(/* reef structure coordinates */);
@@ -228,7 +228,7 @@ Based on the import analysis, MapleSim is used for:
 
 ### Complete Robot Simulation
 - **Arena2025Reefscape**: Full FRC 2025 field simulation
-- **ChassisSimulation**: Swerve drive physics simulation  
+- **ChassisSimulation**: Swerve drive physics simulation
 - **VisionSimulation**: Camera and AprilTag simulation
 - **GamePieceSimulation**: Note/coral interaction physics
 - **HumanPlayerSimulation**: Human player station simulation
@@ -238,7 +238,7 @@ Based on the import analysis, MapleSim is used for:
 public class Robot extends LoggedRobot {
     private SimulationWorld simulationWorld;
     private Arena2025Reefscape fieldSimulation;
-    
+
     @Override
     public void robotInit() {
         if (Robot.isSimulation()) {
@@ -247,13 +247,13 @@ public class Robot extends LoggedRobot {
             fieldSimulation = new Arena2025Reefscape(simulationWorld);
         }
     }
-    
+
     @Override
     public void simulationPeriodic() {
         if (simulationWorld != null) {
             // Update physics simulation
             simulationWorld.simulationSubTick(0.020);
-            
+
             // Update robot pose in field
             fieldSimulation.updateRobotPose(robotContainer.getChassis().getPose());
         }
@@ -271,7 +271,7 @@ public class CollisionSimulation {
         if (world.isColliding(robotPose, robotBoundary)) {
             handleWallCollision();
         }
-        
+
         // Check robot-to-game-piece collisions
         List<GamePiece> collidingPieces = world.getCollidingGamePieces(robotPose);
         for (GamePiece piece : collidingPieces) {
@@ -285,22 +285,22 @@ public class CollisionSimulation {
 ```java
 public class SimulationManager {
     private int simulationCounter = 0;
-    
+
     public void updateSimulation() {
         // Run physics at full rate
         world.simulationSubTick(0.020);
-        
+
         // Update heavy computations less frequently
         simulationCounter++;
         if (simulationCounter % 5 == 0) { // Every 100ms
             updateExpensiveSimulations();
         }
     }
-    
+
     private void updateExpensiveSimulations() {
         // Update vision simulation
         visionSimulation.update();
-        
+
         // Update field visualization
         updateFieldVisualization();
     }
@@ -317,11 +317,11 @@ public class SimulationInputs {
         public boolean[] gamePieceCollected = new boolean[0];
         public double simulationTimestamp = 0.0;
     }
-    
+
     public void updateInputs(SimulationIOInputsAutoLogged inputs) {
         inputs.simulatedPose = driveSimulation.getSimulatedDriveTrainPose();
         inputs.simulationTimestamp = Timer.getFPGATimestamp();
-        
+
         // Log game piece states
         List<GamePiece> pieces = world.getGamePieces();
         inputs.gamePickupPositions = pieces.stream()
@@ -336,7 +336,7 @@ public class SimulationInputs {
 MapleSim uses the standard FRC coordinate system:
 - **Origin**: Blue alliance driver station wall
 - **X-axis**: Points toward red alliance (field length)
-- **Y-axis**: Points toward center of field (field width)  
+- **Y-axis**: Points toward center of field (field width)
 - **Rotation**: Counter-clockwise positive
 - **Units**: Meters for distance, radians for angles
 

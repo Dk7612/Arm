@@ -68,9 +68,9 @@ Place the robot in front of an AprilTag in a **known, repeatable position**. You
           └─────────────┘     (this side faces away from tag)
 
      ← Left of tag (+)    Right of tag (−) →
-        (when you stand         
-         behind the tag         
-         and look outward)      
+        (when you stand
+         behind the tag
+         and look outward)
 
   On our robot the collector is the "front."
   In this position the camera (back) faces the tag and the
@@ -179,7 +179,7 @@ AdvantageScope lets you compare the vision-estimated position against the integr
 3. **Open the 2D field view** (or 3D if you prefer) and add these two poses:
    - **Integrated pose**: drag `Drive/OdometryPose` onto the field. This is the robot's best-guess position that fuses wheel encoders, gyro, and vision together.
    - **Vision-only pose**: drag `Vision/limelight/Position` onto the field. This is the raw position reported by the camera alone.
-   
+
    *(Replace `limelight` with your camera's name if it differs.)*
 
 4. **Drive the robot around** while it can see AprilTags. Watch both poses on the field view:

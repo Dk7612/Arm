@@ -92,7 +92,7 @@ Control:
 
 **Intake Subsystem Example:**
 ```yaml
-Mechanism Name: "Intake" 
+Mechanism Name: "Intake"
 Primary Function: "Collect game pieces from floor"
 Movement Type: "Rotational (roller) + Linear (deploy/retract)"
 Range of Motion: "Roller: continuous, Deploy: 0-90 degrees"
@@ -107,7 +107,7 @@ Motors:
 
 Gearing:
 - Roller Ratio: 3:1 reduction
-- Deploy Ratio: 100:1 reduction  
+- Deploy Ratio: 100:1 reduction
 - Intake Mass: 2 kg
 - Deploy Arm Length: 0.3 meters
 
@@ -128,7 +128,7 @@ Control:
 
 1. **"What does your mechanism do?"** → Determines subsystem purpose
 2. **"Does it spin, slide, or both?"** → Movement type
-3. **"How many motors control it?"** → Motor count  
+3. **"How many motors control it?"** → Motor count
 4. **"What type of motors are they?"** → Motor type selection
 5. **"What are their CAN IDs?"** → Hardware mapping
 6. **"Do any motors work together?"** → Follower relationships
@@ -170,7 +170,7 @@ private final TalonFX motor = new TalonFX(MOTOR_ID, RobotMap.CANIVORE_NAME);
 
 **Dual Motor with Follower:**
 ```java
-// Constants  
+// Constants
 public static final int LEADER_ID = 10;
 public static final int FOLLOWER_ID = 11;
 
@@ -188,7 +188,7 @@ follower.setControl(new Follower(leader.getDeviceID(), true)); // true = oppose 
 public static final int RETRACTED_LIMIT_DIO = 4;
 public static final int EXTENDED_LIMIT_DIO = 5;
 
-// Subsystem  
+// Subsystem
 private final DigitalInput retractedLimit = new DigitalInput(RETRACTED_LIMIT_DIO);
 private final DigitalInput extendedLimit = new DigitalInput(EXTENDED_LIMIT_DIO);
 
@@ -206,7 +206,7 @@ public static final int BEAM_BREAK_DIO = 6;
 // Subsystem
 private final DigitalInput beamBreak = new DigitalInput(BEAM_BREAK_DIO);
 
-// Usage  
+// Usage
 public boolean hasGamePiece() {
     return !beamBreak.get(); // Inverted - beam blocked = game piece present
 }
@@ -220,14 +220,14 @@ public boolean hasGamePiece() {
 |----------------|-------------|------------------|-------------------|
 | **Shooter** | Launch game pieces | 1-2 TalonFX motors, flywheel | 3000, 4500, 6000 RPM |
 | **Intake** | Collect game pieces | 1 TalonFX (roller) + 1 NEO (deploy) | Deploy: 0°/90°, Roller: 2000 RPM |
-| **Elevator** | Lift vertically | 1-2 TalonFX motors, gearbox | Ground: 0", Low: 12", High: 36" |  
+| **Elevator** | Lift vertically | 1-2 TalonFX motors, gearbox | Ground: 0", Low: 12", High: 36" |
 | **Arm** | Rotate horizontally | 1-2 TalonFX motors, gearbox | Stowed: 0°, Score: 45°, Intake: -15° |
 | **Climber** | End-game climbing | 1-2 TalonFX motors, winch | Retracted: 0", Extended: 24" |
 | **Wrist** | Orient end effector | 1 NEO motor, high reduction | Horizontal: 0°, Down: -90°, Up: 90° |
 
 **Questions to determine mechanism type:**
 - "Does it shoot something?" → **Shooter**
-- "Does it pick things up?" → **Intake** 
+- "Does it pick things up?" → **Intake**
 - "Does it go up and down?" → **Elevator**
 - "Does it rotate/swing?" → **Arm** or **Wrist**
 - "Does it lift the robot?" → **Climber**
@@ -283,41 +283,41 @@ import edu.wpi.first.units.measure.*;
 import static edu.wpi.first.units.Units.*;
 
 public class {SubsystemName}Constants {
-    
+
     // Hardware IDs
     public static final int MOTOR_ID = 10; // Update with actual CAN ID
     public static final int SENSOR_DIO_PORT = 0; // Digital input port
-    
+
     // Physical Constants
     public static final double GEAR_RATIO = 10.0;
     public static final Voltage MAX_VOLTAGE = Volts.of(12.0);
     public static final Current CURRENT_LIMIT = Amps.of(40.0);
-    
+
     // Control Constants
     public static final double KS = 0.25; // Static friction (V)
-    public static final double KV = 0.12; // Velocity gain (V·s/rot)  
+    public static final double KV = 0.12; // Velocity gain (V·s/rot)
     public static final double KA = 0.01; // Acceleration gain (V·s²/rot)
     public static final double KP = 2.4;  // Proportional gain
     public static final double KI = 0.0;  // Integral gain
     public static final double KD = 0.1;  // Derivative gain
-    
+
     // Setpoints and Limits
     public static final Angle MAX_POSITION = Rotations.of(5.0);
     public static final Angle MIN_POSITION = Rotations.of(0.0);
     public static final AngularVelocity MAX_VELOCITY = RotationsPerSecond.of(20.0);
-    
+
     // Configuration Objects
     public static TalonFXConfiguration createMotorConfig() {
         var config = new TalonFXConfiguration();
-        
+
         // Motor output
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        
+
         // Current limiting
         config.CurrentLimits.StatorCurrentLimit = CURRENT_LIMIT.in(Amps);
         config.CurrentLimits.StatorCurrentLimitEnable = true;
-        
+
         // Slot 0 gains
         config.Slot0.kS = KS;
         config.Slot0.kV = KV;
@@ -325,10 +325,10 @@ public class {SubsystemName}Constants {
         config.Slot0.kP = KP;
         config.Slot0.kI = KI;
         config.Slot0.kD = KD;
-        
+
         return config;
     }
-    
+
     // Control Requests (reusable objects)
     public static final class ControlRequests {
         public static final VoltageOut voltageRequest = new VoltageOut(0);
@@ -370,40 +370,40 @@ import static edu.wpi.first.units.Units.*;
 import static org.tahomarobotics.robot.{subsystemname}.{SubsystemName}Constants.*;
 
 public class {SubsystemName}Subsystem extends AbstractSubsystem implements AutoCloseable {
-    
+
     // Hardware
     private final TalonFX motor;
     private final DigitalInput limitSwitch;
-    
+
     // Status signals for efficient CAN usage
     private final StatusSignal<Angle> positionSignal;
     private final StatusSignal<AngularVelocity> velocitySignal;
     private final StatusSignal<Voltage> voltageSignal;
     private final StatusSignal<Current> currentSignal;
-    
+
     // Control requests (reused for performance)
     private final VoltageOut voltageRequest = ControlRequests.voltageRequest;
-    
+
     // Default constructor - only place that creates the subsystem (except unit tests)
     public {SubsystemName}Subsystem() {
         motor = new TalonFX(MOTOR_ID, RobotMap.CANIVORE_NAME);
         limitSwitch = new DigitalInput(SENSOR_DIO_PORT);
-        
+
         // Configure motor
         RobustConfigurator.configure(motor, createMotorConfig());
-        
+
         // Initialize status signals
         positionSignal = motor.getPosition();
         velocitySignal = motor.getVelocity();
         voltageSignal = motor.getMotorVoltage();
         currentSignal = motor.getStatorCurrent();
-        
+
         // Optimize CAN usage
         BaseStatusSignal.setUpdateFrequencyForAll(50, positionSignal, velocitySignal);
         BaseStatusSignal.setUpdateFrequencyForAll(10, voltageSignal, currentSignal);
         ParentDevice.optimizeBusUtilizationForAll(motor);
     }
-    
+
     // Package-private constructor for unit testing
     {SubsystemName}Subsystem({SubsystemName}Subsystem subsystem) {
         this.motor = subsystem.motor;
@@ -413,55 +413,55 @@ public class {SubsystemName}Subsystem extends AbstractSubsystem implements AutoC
         this.voltageSignal = subsystem.voltageSignal;
         this.currentSignal = subsystem.currentSignal;
     }
-    
+
     @Override
     public void subsystemPeriodic() {
         // Refresh status signals
         BaseStatusSignal.refreshAll(positionSignal, velocitySignal, voltageSignal, currentSignal);
-        
+
         // Log data with AdvantageKit
         Logger.recordOutput("{SubsystemName}/Position", positionSignal.getValueAsDouble());
         Logger.recordOutput("{SubsystemName}/Velocity", velocitySignal.getValueAsDouble());
         Logger.recordOutput("{SubsystemName}/Voltage", voltageSignal.getValueAsDouble());
         Logger.recordOutput("{SubsystemName}/Current", currentSignal.getValueAsDouble());
         Logger.recordOutput("{SubsystemName}/LimitSwitch", getLimitSwitch());
-        
+
         // Log motor temperature if needed
         if (Robot.isReal()) {
             Logger.recordOutput("{SubsystemName}/Temperature", motor.getDeviceTemp().getValueAsDouble());
         }
     }
-    
+
     // Public interface methods
     public void setVoltage(Voltage voltage) {
         motor.setControl(voltageRequest.withOutput(voltage.in(Volts)));
     }
-    
+
     public void stop() {
         setVoltage(Volts.of(0.0));
     }
-    
+
     public Angle getPosition() {
         return Rotations.of(positionSignal.getValueAsDouble());
     }
-    
+
     public AngularVelocity getVelocity() {
         return RotationsPerSecond.of(velocitySignal.getValueAsDouble());
     }
-    
+
     public boolean getLimitSwitch() {
         return !limitSwitch.get(); // Inverted for normally open switch
     }
-    
+
     // Supplier methods for command factories
     public BooleanSupplier limitSwitchSupplier() {
         return this::getLimitSwitch;
     }
-    
+
     public BooleanSupplier atPosition(Angle targetPosition, Angle tolerance) {
         return () -> Math.abs(getPosition().in(Rotations) - targetPosition.in(Rotations)) < tolerance.in(Rotations);
     }
-    
+
     @Override
     public void close() {
         motor.close();
@@ -494,20 +494,20 @@ import java.util.function.DoubleSupplier;
 import static edu.wpi.first.units.Units.*;
 
 public class {SubsystemName} implements AutoCloseable {
-    
+
     // Subsystem reference
     private final {SubsystemName}Subsystem subsystem;
-    
+
     // Default constructor - creates new subsystem instance
     public {SubsystemName}() {
         this(new {SubsystemName}Subsystem());
     }
-    
+
     // Package-private constructor for unit testing
     {SubsystemName}({SubsystemName}Subsystem subsystem) {
         this.subsystem = subsystem;
     }
-    
+
     // Basic commands
     public Command runVoltage(DoubleSupplier voltageSupplier) {
         return subsystem.run(() -> {
@@ -515,12 +515,12 @@ public class {SubsystemName} implements AutoCloseable {
             subsystem.setVoltage(Volts.of(voltage));
         }).withName("{SubsystemName} Run Voltage");
     }
-    
+
     public Command stop() {
         return subsystem.runOnce(() -> subsystem.stop())
             .withName("{SubsystemName} Stop");
     }
-    
+
     // Complex command example
     public Command moveToPosition(double targetRotations) {
         return new FunctionalCommand(
@@ -529,7 +529,7 @@ public class {SubsystemName} implements AutoCloseable {
                 CommandLogger.logCommandStart("Move {SubsystemName} to " + targetRotations);
                 // TODO: Implement position control
             },
-            // onExecute  
+            // onExecute
             () -> {
                 // TODO: Implement position control loop
                 // This would typically use Motion Magic or PID control
@@ -545,16 +545,16 @@ public class {SubsystemName} implements AutoCloseable {
             subsystem
         ).withName("{SubsystemName} Move to Position");
     }
-    
+
     // Convenience methods for common operations
     public Command deploy() {
         return moveToPosition({SubsystemName}Constants.MAX_POSITION.in(Rotations));
     }
-    
+
     public Command retract() {
         return moveToPosition({SubsystemName}Constants.MIN_POSITION.in(Rotations));
     }
-    
+
     @Override
     public void close() throws Exception {
         subsystem.close();
@@ -587,58 +587,58 @@ import org.tahomarobotics.robot.sim.AbstractSimulation;
 import static edu.wpi.first.units.Units.*;
 
 public class {SubsystemName}Simulation extends AbstractSimulation {
-    
+
     // Physics simulation
     private final LinearSystemSim<N2, N1, N1> simulation;
     private final {SubsystemName}Subsystem subsystem;
-    
+
     // Simulation parameters
     private static final double MECHANISM_MASS = 2.0; // kg
     private static final double MECHANISM_LENGTH = 0.5; // meters
     private static final DCMotor MOTOR = DCMotor.getFalcon500(1);
-    
+
     public {SubsystemName}Simulation({SubsystemName}Subsystem subsystem) {
         this.subsystem = subsystem;
-        
+
         // Create physics plant model
         LinearSystem<N2, N1, N1> plant = LinearSystemId.createSingleJointedArmSystem(
-            MOTOR, 
+            MOTOR,
             MECHANISM_MASS * MECHANISM_LENGTH * MECHANISM_LENGTH / 3.0, // J (moment of inertia)
             {SubsystemName}Constants.GEAR_RATIO
         );
-        
+
         this.simulation = new LinearSystemSim<>(plant);
     }
-    
+
     @Override
     public void updateSim() {
         // Get motor voltage from subsystem
         double motorVoltage = subsystem.voltageSignal.getValueAsDouble();
-        
+
         // Set input voltage to simulation
         simulation.setInput(motorVoltage);
-        
+
         // Update simulation
         simulation.update(0.020); // 20ms robot period
-        
+
         // Apply simulated position and velocity back to motor
         double position = simulation.getOutput(0); // Position in rotations
         double velocity = simulation.getOutput(1); // Velocity in rotations/sec
-        
+
         // Update motor simulation state
         subsystem.motor.getSimState().setRawRotorPosition(position);
         subsystem.motor.getSimState().setRotorVelocity(velocity);
-        
+
         // Simulate limit switch
         boolean limitHit = position <= {SubsystemName}Constants.MIN_POSITION.in(Rotations);
         // Note: Limit switch simulation would need additional implementation
     }
-    
+
     // Helper methods for testing
     public double getSimulatedPosition() {
         return simulation.getOutput(0);
     }
-    
+
     public double getSimulatedVelocity() {
         return simulation.getOutput(1);
     }
@@ -695,21 +695,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("unit")
 public class {SubsystemName}Test extends BaseTest {
-    
+
     @Test
     public void testSubsystemCreation() {
         // Create subsystem using default constructor
         {SubsystemName}Subsystem originalSubsystem = new {SubsystemName}Subsystem();
         assertNotNull(originalSubsystem);
-        
+
         // Test package-private constructor for unit testing
         {SubsystemName}Subsystem testSubsystem = new {SubsystemName}Subsystem(originalSubsystem);
         assertNotNull(testSubsystem);
-        
+
         // Test basic functionality
         testSubsystem.stop();
         assertEquals(0.0, testSubsystem.getVelocity().in(RotationsPerSecond), 0.01);
-        
+
         originalSubsystem.close();
     }
 }
@@ -740,32 +740,32 @@ import org.littletonrobotics.junction.Logger;
 import static edu.wpi.first.units.Units.*;
 
 public class {SubsystemName}SysIdRoutine {
-    
+
     private final {SubsystemName}Subsystem subsystem;
     private final SysIdRoutine sysIdRoutine;
-    
+
     public {SubsystemName}SysIdRoutine({SubsystemName}Subsystem subsystem) {
         this.subsystem = subsystem;
-        
+
         // Configure SysId routine
         this.sysIdRoutine = new SysIdRoutine(
             new Config(
                 // Ramp rate - start conservative, increase if needed
                 Volts.of(1).per(Seconds.of(1)), // 1 volt per second
-                
+
                 // Maximum voltage - match your mechanism's safe operating voltage
                 Volts.of(7),  // Start conservative, increase to 10-12V if needed
-                
+
                 // Timeout for each test
                 Seconds.of(10),
-                
+
                 // Data recording callback
                 (state) -> Logger.recordOutput("SysId/State", state.toString())
             ),
             new Mechanism(
                 // Drive function - applies voltage to motor
                 (Measure<Voltage> volts) -> subsystem.setVoltage(volts.in(Volts)),
-                
+
                 // Log function - records motor data
                 (SysIdRoutineLog log) -> {
                     // Log motor voltage (input)
@@ -774,26 +774,26 @@ public class {SubsystemName}SysIdRoutine {
                         .position(Rotations.of(subsystem.getPosition().in(Rotations)))
                         .velocity(RotationsPerSecond.of(subsystem.getVelocity().in(RotationsPerSecond)));
                 },
-                
+
                 subsystem // Subsystem requirement
             )
         );
     }
-    
+
     // Quasistatic tests - slow ramp to measure kS and kV
     public Command quasistaticForward() {
         return sysIdRoutine.quasistatic(Direction.kForward);
     }
-    
+
     public Command quasistaticReverse() {
         return sysIdRoutine.quasistatic(Direction.kReverse);
     }
-    
+
     // Dynamic tests - quick step to measure kA
     public Command dynamicForward() {
         return sysIdRoutine.dynamic(Direction.kForward);
     }
-    
+
     public Command dynamicReverse() {
         return sysIdRoutine.dynamic(Direction.kReverse);
     }
@@ -860,7 +860,7 @@ private final {SubsystemName}SysIdRoutine {subsystemName}SysId;
 private void configureBindings() {
     // SysId commands - use triggers that won't interfere with normal operation
     // Example: Use secondary driver controller or specific button combinations
-    
+
     secondaryController.a().onTrue({subsystemName}SysId.quasistaticForward());
     secondaryController.b().onTrue({subsystemName}SysId.quasistaticReverse());
     secondaryController.x().onTrue({subsystemName}SysId.dynamicForward());
@@ -875,7 +875,7 @@ private void configureBindings() {
 3. **Configure Project**: Create new project, set robot address (10.20.46.2)
 4. **Run Tests in Order**:
    - Quasistatic Forward (slow ramp forward)
-   - Quasistatic Reverse (slow ramp reverse)  
+   - Quasistatic Reverse (slow ramp reverse)
    - Dynamic Forward (quick step forward)
    - Dynamic Reverse (quick step reverse)
 5. **Analyze Results**: SysId will calculate kS, kV, kA values
@@ -892,21 +892,21 @@ public class {SubsystemName}Constants {
         public static final double KV = 0.12;  // Velocity gain (V per rps)
         public static final double KA = 0.01;  // Acceleration gain (V per rps/s)
     }
-    
+
     // Use these gains in motor configuration
     public static TalonFXConfiguration createMotorConfig() {
         var config = new TalonFXConfiguration();
-        
+
         // Apply feedforward gains to slot 0
         config.Slot0.kS = FeedforwardGains.KS;
         config.Slot0.kV = FeedforwardGains.KV;
         config.Slot0.kA = FeedforwardGains.KA;
-        
+
         // Start with conservative feedback gains, tune as needed
         config.Slot0.kP = 4.8;  // Adjust based on mechanism response
         config.Slot0.kI = 0.0;  // Usually not needed for position control
         config.Slot0.kD = 0.1;  // Helps reduce oscillation
-        
+
         return config;
     }
 }
@@ -950,13 +950,13 @@ Once you have good feedforward gains, configure Motion Magic:
 ```java
 public static TalonFXConfiguration createMotionMagicConfig() {
     var config = createMotorConfig(); // Gets feedforward gains
-    
+
     // Motion Magic parameters
     var motionMagic = config.MotionMagic;
     motionMagic.MotionMagicCruiseVelocity = 80;   // rps - adjust for mechanism
     motionMagic.MotionMagicAcceleration = 160;    // rps/s - adjust for mechanism
     motionMagic.MotionMagicJerk = 1600;          // rps/s² - requires Pro license
-    
+
     return config;
 }
 
@@ -975,26 +975,26 @@ Keep a tuning log for each subsystem:
 ```java
 /**
  * TUNING LOG - {SubsystemName}
- * 
+ *
  * SysId Results (Date: YYYY-MM-DD):
  * - kS: 0.25V (static friction)
- * - kV: 0.12V per rps (velocity feedforward)  
+ * - kV: 0.12V per rps (velocity feedforward)
  * - kA: 0.01V per rps/s (acceleration feedforward)
  * - R²: 0.98 (data quality - should be >0.95)
- * 
+ *
  * PID Tuning Notes:
  * - kP: Started at 4.8, stable with good tracking
  * - kI: 0.0 - not needed, position control is stable
  * - kD: 0.1 - helps reduce overshoot
- * 
+ *
  * Motion Magic Settings:
  * - Cruise Velocity: 80 rps (mechanism limit)
  * - Acceleration: 160 rps/s (smooth motion)
  * - Jerk: 1600 rps/s² (Pro license required)
- * 
+ *
  * Known Issues:
  * - None currently
- * 
+ *
  * Last Updated: YYYY-MM-DD by [Your Name]
  */
 ```
@@ -1005,7 +1005,7 @@ Keep a tuning log for each subsystem:
 - [ ] Create `{SubsystemName}Constants.java` with hardware IDs and control constants
 - [ ] Create `{SubsystemName}Subsystem.java` extending AbstractSubsystem
 - [ ] Create `{SubsystemName}.java` command factory class
-- [ ] Create `{SubsystemName}Simulation.java` extending AbstractSimulation  
+- [ ] Create `{SubsystemName}Simulation.java` extending AbstractSimulation
 - [ ] **Create `{SubsystemName}SysIdRoutine.java` for motor characterization**
 - [ ] **Add SysId methods to subsystem (setVoltage, getPosition, getVelocity, etc.)**
 - [ ] **Add SysId commands to RobotContainer**

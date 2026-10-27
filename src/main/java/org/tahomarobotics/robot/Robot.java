@@ -1,26 +1,26 @@
 /*
- * MIT License
- *
- * Copyright (c) 2026 Bear Metal
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+* MIT License
+*
+* Copyright (c) 2026 Bear Metal
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 package org.tahomarobotics.robot;
 
 import edu.wpi.first.net.WebServer;
@@ -33,123 +33,119 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.tahomarobotics.robot.util.AbstractSubsystem;
 import org.tahomarobotics.robot.util.CommandLogger;
-import org.tahomarobotics.robot.util.PerformanceMonitor;
 import org.tahomarobotics.robot.util.Identity;
+import org.tahomarobotics.robot.util.PerformanceMonitor;
 import org.tahomarobotics.robot.util.WatchDog;
 
 public class Robot extends LoggedRobot {
 
-    private final RobotContainer robotContainer;
+  private final RobotContainer robotContainer;
 
-    private static final int SUB_FRAMES_PER_FRAME = 10;
-    private int subFrame = SUB_FRAMES_PER_FRAME - 1;
+  private static final int SUB_FRAMES_PER_FRAME = 10;
+  private int subFrame = SUB_FRAMES_PER_FRAME - 1;
 
-    Robot() {
-        super(Robot.isSimulation() ? 0.002 : 0.02);
+  Robot() {
+    super(Robot.isSimulation() ? 0.002 : 0.02);
 
-        PerformanceMonitor.registerTask("Subsystem/Total", PerformanceMonitor.PERIOD_SLOW_MS);
-        if (Robot.isSimulation()) {
-            PerformanceMonitor.registerTask("Simulation/Total", PerformanceMonitor.PERIOD_SLOW_MS);
-        }
-
-        Logger.addDataReceiver(new NT4Publisher());
-
-        this.robotContainer = new RobotContainer();
-
-        if (Robot.isSimulation()) {
-            WatchDog.disableWatchdog(this);
-            WatchDog.disableWatchdog(CommandScheduler.getInstance());
-        } else {
-            WatchDog.disableWatchdog(this);
-            WatchDog.disableWatchdog(CommandScheduler.getInstance());
-            // initialize AdvantageScope publishing
-            Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/alogs" ));
-        }
-
-        Logger.start();
-
-        // logs the duration of commands that finish or get interrupted
-        CommandLogger.install();
+    PerformanceMonitor.registerTask("Subsystem/Total", PerformanceMonitor.PERIOD_SLOW_MS);
+    if (Robot.isSimulation()) {
+      PerformanceMonitor.registerTask("Simulation/Total", PerformanceMonitor.PERIOD_SLOW_MS);
     }
 
-    @Override
-    public void robotInit() {
-        // TODO: schedule pathplanner warmup
+    Logger.addDataReceiver(new NT4Publisher());
 
-        WebServer.start(5800, Filesystem.getDeployDirectory().getAbsolutePath());
+    this.robotContainer = new RobotContainer();
+
+    if (Robot.isSimulation()) {
+      WatchDog.disableWatchdog(this);
+      WatchDog.disableWatchdog(CommandScheduler.getInstance());
+    } else {
+      WatchDog.disableWatchdog(this);
+      WatchDog.disableWatchdog(CommandScheduler.getInstance());
+      // initialize AdvantageScope publishing
+      Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/alogs"));
     }
 
-    @Override
-    public void robotPeriodic() {
+    Logger.start();
 
-        // downsample high-frequency simulation updates
-        if (Robot.isSimulation()) {
-            subFrame = ++subFrame % SUB_FRAMES_PER_FRAME;
-            if (subFrame != 0) {
-                return;
-            }
-        }
+    // logs the duration of commands that finish or get interrupted
+    CommandLogger.install();
+  }
 
-        PerformanceMonitor.logExecutionTime("Subsystem/Total", CommandScheduler.getInstance()::run);
-        AbstractSubsystem.logCurrent();
+  @Override
+  public void robotInit() {
+    // TODO: schedule pathplanner warmup
+
+    WebServer.start(5800, Filesystem.getDeployDirectory().getAbsolutePath());
+  }
+
+  @Override
+  public void robotPeriodic() {
+
+    // downsample high-frequency simulation updates
+    if (Robot.isSimulation()) {
+      subFrame = ++subFrame % SUB_FRAMES_PER_FRAME;
+      if (subFrame != 0) {
+        return;
+      }
     }
 
-    @Override
-    public void autonomousInit() {
-        // TODO: restore autonomous command selection when autonomous is implemented
-    }
+    PerformanceMonitor.logExecutionTime("Subsystem/Total", CommandScheduler.getInstance()::run);
+    AbstractSubsystem.logCurrent();
+  }
 
-    @Override
-    public void autonomousExit() {
-        // TODO: cancel auto command when autonomous is implemented
-    }
+  @Override
+  public void autonomousInit() {
+    // TODO: restore autonomous command selection when autonomous is implemented
+  }
 
-    @Override
-    public void autonomousPeriodic() {
-        // no need for this other than removing console printouts
-    }
+  @Override
+  public void autonomousExit() {
+    // TODO: cancel auto command when autonomous is implemented
+  }
 
-    @Override
-    public void disabledInit() {
-        robotContainer.oi.exitTestMode();
-    }
+  @Override
+  public void autonomousPeriodic() {
+    // no need for this other than removing console printouts
+  }
 
-    @Override
-    public void teleopPeriodic() {
-        // no need for this other than removing console printouts
-    }
+  @Override
+  public void disabledInit() {
+    robotContainer.oi.exitTestMode();
+  }
 
-    @Override
-    public void disabledPeriodic() {
-        // no need for this other than removing console printouts
-    }
+  @Override
+  public void teleopPeriodic() {
+    // no need for this other than removing console printouts
+  }
 
-    @Override
-    public void simulationInit() {
+  @Override
+  public void disabledPeriodic() {
+    // no need for this other than removing console printouts
+  }
 
-    }
+  @Override
+  public void simulationInit() {}
 
-    @Override
-    public void simulationPeriodic() {
+  @Override
+  public void simulationPeriodic() {}
 
-    }
+  @Override
+  public void testInit() {
+    robotContainer.oi.enterTestMode();
+  }
 
-    @Override
-    public void testInit() {
-        robotContainer.oi.enterTestMode();
-    }
+  @Override
+  public void close() {
+    super.close();
+    robotContainer.close();
+  }
 
-    @Override
-    public void close() {
-        super.close();
-        robotContainer.close();
-    }
+  public static void main(String... args) {
+    // Determine which robot this code is running on before any configs are built.
+    org.tinylog.Logger.info("Selected RobotIdentity: {}", Identity.getIdentity());
 
-    public static void main(String... args) {
-        // Determine which robot this code is running on before any configs are built.
-        org.tinylog.Logger.info("Selected RobotIdentity: {}", Identity.getIdentity());
-
-        // start this class or restart if something bad happened
-        RobotBase.startRobot(Robot::new);
-    }
+    // start this class or restart if something bad happened
+    RobotBase.startRobot(Robot::new);
+  }
 }
