@@ -68,7 +68,10 @@ public class OI {
     currentBindings = Bindings.TELEOP;
 
     // -- Drive Controller Bindings --
-
+    driverController.leftTrigger().whileTrue(robotContainer.roller.intake());
+    driverController.rightTrigger().whileTrue(robotContainer.roller.eject());
+    driverController.a().onTrue(robotContainer.roller.stop());
+    driverController.x().onTrue(robotContainer.roller.eject());
     // -- Manip Controller Bindings --
 
     // -- Simulation Controller Bindings --

@@ -23,6 +23,9 @@
 */
 package org.tahomarobotics.robot;
 
+import org.tahomarobotics.robot.roller.Roller;
+import org.tahomarobotics.robot.roller.RollerIF;
+
 /**
  * The RobotContainer declares the robot's structure: subsystems, commands and simulations. All the
  * robot's components and their relationships are declared here rather than scattered throughout the
@@ -39,11 +42,15 @@ public final class RobotContainer implements AutoCloseable {
 
   final OI oi;
   final RobotVisualization visualization;
+  
+  final RollerIF roller;
+
 
   public RobotContainer() {
     visualization = new RobotVisualization();
 
     oi = new OI(this);
+    roller = new Roller();
   }
 
   @Override
