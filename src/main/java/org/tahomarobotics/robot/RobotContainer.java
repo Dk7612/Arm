@@ -42,9 +42,8 @@ public final class RobotContainer implements AutoCloseable {
 
   final OI oi;
   final RobotVisualization visualization;
-  
-  final RollerIF roller;
 
+  final RollerIF roller;
 
   public RobotContainer() {
     visualization = new RobotVisualization();

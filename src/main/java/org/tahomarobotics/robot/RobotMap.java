@@ -43,7 +43,7 @@ public final class RobotMap {
   public static final ModuleId BACK_RIGHT_MODULE = new ModuleId("Back Right Module", 4, 14, 24);
 
   public static final int ROLLER_MOTOR_ID = 79;
-  
+
   public static final int ARM_MOTOR_ID = 42;
 
   public record ModuleId(String moduleName, int driveId, int steerId, int cancoderId) {}
