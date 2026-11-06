@@ -38,14 +38,14 @@ import org.littletonrobotics.junction.Logger;
 import org.tahomarobotics.robot.RobotMap;
 import org.tahomarobotics.robot.util.AbstractSubsystem;
 
-public class ArmSubsystems extends AbstractSubsystem {
-  private final TalonFX armMotor = new TalonFX(RobotMap.ROLLER_MOTOR_ID, RobotMap.CANBUS_NAME);
+public class ArmSubsystem extends AbstractSubsystem {
+  private final TalonFX armMotor = new TalonFX(RobotMap.ROLLER_MOTOR_ID);
   private final StatusSignal<Current> armCurrent;
   private final StatusSignal<AngularVelocity> armVelocity;
   private final NeutralOut neutralOutRequest = new NeutralOut();
   private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0);
 
-  public ArmSubsystems() {
+  public ArmSubsystem() {
     armCurrent = armMotor.getSupplyCurrent();
     armVelocity = armMotor.getVelocity();
 
@@ -57,7 +57,7 @@ public class ArmSubsystems extends AbstractSubsystem {
     armMotor.setControl(velocityVoltageRequest.withVelocity(velocity));
   }
 
-  public void setNeutralmode() {
+  public void setNeutralMode() {
     armMotor.setControl(neutralOutRequest);
   }
 
