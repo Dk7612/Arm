@@ -60,6 +60,6 @@ public class Roller implements RollerIF {
 
   @Override
   public Command stop() {
-    return subsystem.run(subsystem::setNeutralmode).withName("Roller Stop Command");
+    return subsystem.runOnce(subsystem::setNeutralmode).withName("Roller Stop Command");
   }
 }

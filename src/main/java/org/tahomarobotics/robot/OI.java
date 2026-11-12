@@ -123,6 +123,7 @@ public class OI {
 
     // restore saved default commands
     AbstractSubsystem.getAllSubsystems().forEach(AbstractSubsystem::restoreDefaultCommand);
+    CommandScheduler.getInstance().getActiveButtonLoop().clear();
 
     bindTeleopControls();
   }

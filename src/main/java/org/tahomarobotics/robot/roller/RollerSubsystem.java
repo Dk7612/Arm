@@ -78,6 +78,6 @@ public class RollerSubsystem extends AbstractSubsystem {
 
   @Override
   public Current getTotalCurrent() {
-    return Amps.of(0);
+    return rollerCurrent.getValue();
   }
 }

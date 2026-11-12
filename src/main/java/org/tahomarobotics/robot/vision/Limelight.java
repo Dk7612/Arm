@@ -175,7 +175,7 @@ public final class Limelight {
   }
 
   public void loadCameraOffset(Transform3d defaultOffset) {
-    if (!Preferences.containsKey(name + "Offset X")) {
+    if (!Preferences.containsKey(name + " Offset X")) {
       org.tinylog.Logger.warn("No saved camera offset found for " + name + ", using default.");
       setCameraOffset(defaultOffset);
     }

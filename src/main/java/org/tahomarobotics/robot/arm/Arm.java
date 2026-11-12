@@ -27,13 +27,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Arm implements ArmIF {
-  private final ArmSubsystems subsystem;
+  private final ArmSubsystem subsystem;
 
   public Arm() {
-    this(new ArmSubsystems());
+    this(new ArmSubsystem());
   }
 
-  Arm(ArmSubsystems subsystem) {
+  Arm(ArmSubsystem subsystem) {
     this.subsystem = subsystem;
   }
 
@@ -41,8 +41,8 @@ public class Arm implements ArmIF {
   public Command forward() {
     return subsystem
         .run(() -> subsystem.setVelocity(ArmConstants.ARM_FORWARD_DPS))
-        .finallyDo(subsystem::setNeutralmode)
-        .withName("Roller Intake Command");
+        .finallyDo(subsystem::setNeutralMode)
+        .withName("Arm Forward Command");
   }
 
   @Override
@@ -54,12 +54,12 @@ public class Arm implements ArmIF {
   public Command backward() {
     return subsystem
         .run(() -> subsystem.setVelocity(ArmConstants.ARM_REVERSE_DPS))
-        .finallyDo(subsystem::setNeutralmode)
-        .withName("Roller Eject Command");
+        .finallyDo(subsystem::setNeutralMode)
+        .withName("Arm Reverse Command");
   }
 
   @Override
   public Command stop() {
-    return subsystem.run(subsystem::setNeutralmode).withName("Roller Stop Command");
+    return subsystem.runOnce(subsystem::setNeutralMode).withName("Arm Halt Command");
   }
 }
